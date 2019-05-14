@@ -1,0 +1,23 @@
+def callscore(ch, method, properties, body):
+    parameters = pika.ConnectionParameters('192.168.10.80', '5672', '/', credentials)
+    connection = pika.BlockingConnection(parameters)
+    channel = connection.channel()
+    channel.queue_declare(queue='scoreget')
+    #parse the body    
+    temp = parse(body)
+    user = temp['username']
+#    cmd = temp['command']
+    score =temp['score']
+    scores = grabscore(user)
+    print 'the score is: ' + scores
+    if (score > scores):
+        upscore(user, score)
+        k = 'score updated'
+        print k
+    else:
+        k = 'score checked, no update'
+        print k
+    channel.basic_publish(exchange='',
+                          routing_key='scoreget',
+                          body=k)
+    connection.close()
